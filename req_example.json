@@ -1,0 +1,134 @@
+{
+  "generation_rules": {
+    "handle_empty_fields": "fill_creatively",
+    "handle_arrays": "select_or_mix_contextually"
+  },
+  "track_specifications": {
+    "global_settings": {
+      "title": "To yourself",
+      "language": "en",
+      "tempo": 140,
+      "residual_emotion": ["introspective"],
+      "brainstorming_words": ["self-discovery", "journey", "change", "growth"],
+      "general_instructions": "Create lyrics that evoke a sense of introspection and personal growth, blending poetic imagery with relatable themes. Using the Hero 's Journey as a narrative framework, craft verses that reflect the stages of self-discovery and transformation."
+    },
+    "sections_specifications": [
+      {
+        "section_type": "Verse",
+        "artistic_influences": ["Radiohead", "Bon Iver", "Sufjan Stevens"],
+        "energy_level": "low",
+        "energy_curve": "gradual_rise",
+        "emotional_arc": {
+          "start": ["uncertain"],
+          "end": ["hopeful"]
+        },
+        "lyric_already_written": "",
+        "creative_brief": ["mirror", "shadow"],
+        "lyric_style": "introspective and poetic",
+        "narrative": {
+          "voice": "first person",
+          "position": "internal monologue",
+          "figures_of_speech": ["metaphor", "simile", "alliteration"],
+          "literalness": "low",
+          "sensorial_details": ["visual", "auditory"],
+          "phrase_types": ["declarative", "interrogative"]
+        },
+        "semantic_constraints": {
+          "avoid_words": ["love", "heart"],
+          "mandatory_concepts": ["mirror", "shadow", "time"],
+          "tone_keywords": ["melancholic", "introspective"]
+        },
+        "rhyme_scheme": "ABAB",
+        "rhyme_type": "end rhyme",
+        "syllabic_density": "medium",
+        "repetition_rules": {
+          "repeat_last_line": true,
+          "allow_hook_variation": true
+        },
+        "scale": "Dorian",
+        "length_in_bars": 16,
+        "notes_length": "short to medium",
+        "spaces_between_lines": "medium",
+        "density_of_notes": "medium",
+        "override_settings": {}
+      },
+      {
+        "section_type": "Chorus",
+        "artistic_influences": ["Coldplay", "U2", "Mumford & Sons"],
+        "energy_level": "high",
+        "energy_curve": "peak",
+        "emotional_arc": {
+          "start": ["hopeful"],
+          "end": ["empowered"]
+        },
+        "musicality_instructions": {
+          "midi_json": {
+            "lyrics_alignment": {
+              "one_syllable_per_note": false,
+              "allow_melisma": true,
+              "prefer_stressed_on_downbeats": true
+            },
+            "notes": [
+              {
+                "time": 0,
+                "note": "G2",
+                "duration": 0.10344827586206896
+              },
+              {
+                "time": 0.25862068965517243,
+                "note": "D#3",
+                "duration": 0.10344827586206895
+              },
+              {
+                "time": 0.41379310344827586,
+                "note": "F2",
+                "duration": 0.103448275862069
+              },
+              {
+                "time": 0.6724137931034483,
+                "note": "G3",
+                "duration": 0.31034482758620685
+              },
+              {
+                "time": 1.293103448275862,
+                "note": "C#2",
+                "duration": 0.31034482758620685
+              }
+            ]
+          }
+        },
+        "lyric_instructions": {
+          "lyric_already_written": "",
+          "brainstorm_words": ["freedom", "light"],
+          "brainstorm_sentences": [
+            "Breaking free from the chains that bind me.",
+            "Stepping into the light of a new day."
+          ],
+          "theme": "embracing change and moving forward",
+          "style": "uplifting and anthemic",
+          "narrative": {
+            "voice": "first person",
+            "position": "declarative statement",
+            "figures_of_speech": ["hyperbole", "imagery", "repetition"],
+            "literalness": "medium",
+            "sensorial_details": ["visual", "kinesthetic"],
+            "phrase_types": ["declarative", "exclamatory"]
+          },
+          "semantic_constraints": {
+            "avoid_words": ["sad", "alone"],
+            "mandatory_concepts": ["freedom", "light", "journey"],
+            "tone_keywords": ["empowering", "uplifting"]
+          },
+          "rhyme_scheme": "AABB",
+          "rhyme_type": "end rhyme",
+          "syllabic_density": "low",
+          "repetition_rules": {
+            "repeat_last_line": true,
+            "allow_hook_variation": true
+          }
+        },
+        "override_settings": {}
+      }
+    ]
+  }
+}

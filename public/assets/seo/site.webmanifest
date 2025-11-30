@@ -1,0 +1,21 @@
+{
+  "name": "Pocketinder",
+  "short_name": "Pocketinder",
+  "description": "The best way to trade TCG Pocket Cards. Simple and Straight to the Point.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#e6eff8",
+  "theme_color": "#e6eff8",
+  "icons": [
+    {
+      "src": "/assets/seo/images/icon-192x192.webp",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/seo/images/icon-512x512.webp",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
