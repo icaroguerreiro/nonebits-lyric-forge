@@ -1,6 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { MainTemplate } from "../templates/Main";
-import { PATHS } from "./paths";
 import Home from "../pages/Home";
 import NotFound from "../pages/NotFound";
 
