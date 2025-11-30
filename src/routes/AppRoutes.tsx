@@ -9,6 +9,7 @@ export function AppRoutes() {
     <BrowserRouter>
       <Routes>
         <Route element={<MainTemplate />}>
+          <Route path="/" element={<Home />} />
           <Route path={`${PATHS.home}/:draft?`} element={<Home />} />
           <Route path="*" element={<NotFound />} />
         </Route>
