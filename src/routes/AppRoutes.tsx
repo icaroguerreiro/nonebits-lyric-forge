@@ -5,7 +5,7 @@ import NotFound from "../pages/NotFound";
 
 export function AppRoutes() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/nonebits-lyric-forge/">
       <Routes>
         <Route element={<MainTemplate />}>
           <Route path="/draft" element={<Home />} />
