@@ -1,7 +1,3 @@
 export const PATHS = {
-  home: "/",
-  login: "/login",
-  dashboard: "/dashboard",
-  about: "/about",
-  userProfile: "/user/:id",
+  home: "/nonebits-lyric-forge",
 } as const;
