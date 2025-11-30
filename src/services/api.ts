@@ -10,7 +10,7 @@ interface IApi extends IRequest {
 }
 
 const apiRaw = axios.create({
-  baseURL: import.meta.env.VITE_HTTP_API,
+  baseURL: "",
 }) as any;
 
 async function apiRequest({ type, url, body }: IApi) {
