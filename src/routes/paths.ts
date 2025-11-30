@@ -1,3 +1,3 @@
 export const PATHS = {
-  home: "/nonebits-lyric-forge",
+  home: "/",
 } as const;

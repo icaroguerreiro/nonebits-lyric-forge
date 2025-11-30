@@ -170,7 +170,7 @@ export default function Home() {
   };
 
   const openDraft = (__id: string) => {
-    navigate(`/${__id}`, { replace: true });
+    navigate(`/draft/${__id}`, { replace: true });
   };
 
   const [fileListOpen, setfileListOpen] = useState(false);
