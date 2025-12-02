@@ -379,6 +379,52 @@ export const RHYME_TYPES = [
   "Head Rhyme",
 ];
 
+export const STYLES = [
+  "Narrative",
+  "Storytelling",
+  "Emotional / Confessional",
+  "Poetic / Imagery-driven",
+  "Abstract / Metaphorical",
+  "Direct / Literal",
+  "Conversational",
+  "Stream of Consciousness",
+  "Descriptive / Scenic",
+  "Minimalist",
+  "Introspective",
+  "Dark / Brooding",
+  "Uplifting / Inspirational",
+  "Melancholic",
+  "Aggressive / Raw",
+  "Romantic",
+  "Surreal / Dreamlike",
+  "Symbolic / Allegorical",
+  "Philosophical",
+  "Humorous / Playful",
+  "Satirical",
+  "Dramatic / Cinematic",
+  "Epic / Grandiose",
+  "Rapid-fire / Dense phrasing",
+  "Repetitive / Mantra-like",
+  "Fragmented / Broken structure",
+  "Call and Response",
+  "Free Verse",
+  "Rhythmic / Groove-based",
+  "Vivid Character Perspective",
+  "Multiple POVs",
+  "Dialogue-heavy",
+  "Spoken Word Style",
+  "Mythological / Archetypal",
+  "Gothic / Haunting",
+  "Sci-fi / Futuristic",
+  "Fantasy-inspired",
+  "Political / Social Commentary",
+  "Reflective / Nostalgic",
+  "Mystical / Spiritual",
+  "Cinematic Montage Style",
+  "Streamlined Pop Structure",
+  "Riddle / Puzzle-like",
+];
+
 export const LENGTHS = ["Very Short", "Short", "Medium", "Long", "Very Long"];
 
 export interface Track {
@@ -390,7 +436,7 @@ export interface GlobalSettings {
   title?: string;
   language?: string;
   tempo?: number;
-  residual_emotion?: string[];
+  residual_emotion?: string[] | null;
   brainstorming_words?: string[];
   general_instructions?: string;
 }
@@ -410,7 +456,7 @@ export interface SectionSpecifications {
   avoid_brief?: string[] | null;
   mandatory_concepts?: string[];
   tone_keywords?: string[];
-  lyric_style?: string;
+  lyric_style?: string | null;
   narrative: Narrative;
   rhyme_scheme?: string | null;
   rhyme_type?: string[] | null;

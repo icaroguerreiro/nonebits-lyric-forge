@@ -41,6 +41,7 @@ import {
   RHYME_SCHEME,
   RHYME_TYPES,
   LENGTHS,
+  STYLES,
 } from "../../types/inputs";
 import { GlobalSettings, SectionSpecifications } from "../../types/inputs";
 import NumberField from "../../components/ui/NumberField";
@@ -57,10 +58,25 @@ import {
   DataObject,
   AddBox,
   Note,
+  DragIndicator,
+  ContentCopy,
 } from "@mui/icons-material";
 import FreeSoloChipsAutocomplete from "../../components/ui/FreeSoloChipsAutocomplete";
 import { useNavigate, useParams } from "react-router-dom";
 import { useToast } from "../../hooks/useToast";
+import SortableSection from "../../components/ui/SortableSection";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  arrayMove,
+} from "@dnd-kit/sortable";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
 
 export default function Home() {
   const { draft } = useParams();
@@ -108,17 +124,9 @@ export default function Home() {
     });
   };
 
-  const [inputs, setinputs] = useState<any>();
-
-  // AUTO LOAD E SAVE
-  // const debouncedInputs = useDebounce(inputs, 500);
-  // useEffect(() => {
-  //   if (!debouncedInputs) return;
-  //   localStorage.setItem(
-  //     "lyricalComposerDraft",
-  //     JSON.stringify(debouncedInputs)
-  //   );
-  // }, [debouncedInputs]);
+  const [inputs, setinputs] = useState<any>({
+    sections_specifications: [],
+  });
 
   const [draftList, setdraftList] = useState<any>([]);
   useEffect(() => {
@@ -199,6 +207,43 @@ export default function Home() {
     });
   };
 
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 3 },
+    })
+  );
+
+  const duplicateSection = (__section: any) => {
+    setinputs((prev: any) => {
+      const idx = prev.sections_specifications.findIndex(
+        (s: any) => s.id === __section.id
+      );
+
+      if (idx === -1) return prev;
+
+      const duplicated = {
+        ...structuredClone(__section),
+        id: crypto.randomUUID(),
+      };
+
+      const updated = [...prev.sections_specifications];
+      updated.splice(idx + 1, 0, duplicated);
+
+      return {
+        ...prev,
+        sections_specifications: updated,
+      };
+    });
+  };
+
+  useEffect(() => {
+    inputs.sections_specifications &&
+      console.log(
+        "inputs.sections_specifications",
+        inputs.sections_specifications
+      );
+  }, [inputs.sections_specifications]);
+
   return (
     <>
       <Card variant="outlined">
@@ -234,7 +279,7 @@ export default function Home() {
             </Grid>
             <Grid size={2}>
               <NumberField
-                label="Tempo"
+                label="Tempo (BPM)"
                 value={inputs?.global_settings?.tempo || ""}
                 onChange={(__ev: any) => {
                   updateGlobalSettings({
@@ -245,39 +290,28 @@ export default function Home() {
               />
             </Grid>
             <Grid size={4}>
-              <Autocomplete
-                multiple
-                freeSolo
-                fullWidth
-                limitTags={3}
-                options={[]}
+              <FreeSoloChipsAutocomplete
+                label="Residual Emotion(s)"
+                options={[...EMOTIONAL_ARC]}
                 value={inputs?.global_settings?.residual_emotion || []}
-                onChange={(__ev, __value) => {
+                limitTags={3}
+                onChange={(__value) => {
                   updateGlobalSettings({
                     residual_emotion: __value,
                   });
                 }}
-                renderInput={(params) => (
-                  <TextField {...params} label="Residual Emotion(s)" />
-                )}
               />
             </Grid>
             <Grid size={6}>
-              <Autocomplete
-                multiple
-                freeSolo
-                fullWidth
-                limitTags={3}
-                options={[]}
+              <FreeSoloChipsAutocomplete
+                label="Track Brainstorm Words"
                 value={inputs?.global_settings?.brainstorming_words || []}
-                onChange={(__ev, __value) => {
+                limitTags={3}
+                onChange={(__value) => {
                   updateGlobalSettings({
                     brainstorming_words: __value,
                   });
                 }}
-                renderInput={(params) => (
-                  <TextField {...params} label="Brainstorm Words" />
-                )}
               />
             </Grid>
             <Grid size={6}>
@@ -299,498 +333,744 @@ export default function Home() {
         <CardContent>
           <Grid container spacing={2}>
             <Grid size={12}>
-              {inputs?.sections_specifications?.map(
-                (__section: SectionSpecifications, __section_i: number) => (
-                  <Accordion
-                    defaultExpanded={!__section?.section_type}
-                    key={__section?.id}
-                  >
-                    <AccordionSummary
-                      expandIcon={<ExpandMore />}
-                      aria-controls="panel3-content"
-                      id="panel3-header"
-                    >
-                      <Typography
-                        component="div"
-                        sx={{ display: "flex", alignItems: "center" }}
-                      >
-                        <Bookmark sx={{ mr: 1 }} fontSize="small" />
-                        {__section.section_type || "Untitled Section"}
-                      </Typography>
-                    </AccordionSummary>
-                    <AccordionDetails>
-                      <Grid container spacing={2}>
-                        {/* <Grid size={12}>
-                          <Typography variant="h6">Specifications</Typography>
-                        </Grid> */}
-                        <Grid size={2}>
-                          <Autocomplete
-                            freeSolo
-                            fullWidth
-                            options={SECTION_TYPES}
-                            value={__section?.section_type || ""}
-                            onInputChange={(__ev, __value) => {
-                              updateSectionSpecifications(__section_i, {
-                                section_type: __value,
-                              });
-                            }}
-                            renderInput={(params) => (
-                              <TextField {...params} label="Section Type" />
-                            )}
-                          />
-                        </Grid>{" "}
-                        <Grid size={4}>
-                          <FreeSoloChipsAutocomplete
-                            label="Artistic Influences"
-                            value={__section?.artistic_influences || []}
-                            limitTags={2}
-                            onChange={(__value) =>
-                              updateSectionSpecifications(__section_i, {
-                                artistic_influences: __value,
-                              })
-                            }
-                          />
-                        </Grid>
-                        <Grid size={3}>
-                          <Autocomplete
-                            fullWidth
-                            options={LEVEL}
-                            value={__section?.energy_level || ""}
-                            onChange={(__ev, __value) => {
-                              updateSectionSpecifications(__section_i, {
-                                energy_level: __value,
-                              });
-                            }}
-                            renderInput={(params) => (
-                              <TextField {...params} label="Energy Level" />
-                            )}
-                          />
-                        </Grid>
-                        <Grid size={3}>
-                          <Autocomplete
-                            fullWidth
-                            options={ENERGY_CURVE}
-                            value={__section?.energy_curve || ""}
-                            onChange={(__ev, __value) => {
-                              updateSectionSpecifications(__section_i, {
-                                energy_curve: __value,
-                              });
-                            }}
-                            renderInput={(params) => (
-                              <TextField {...params} label="Energy Curve" />
-                            )}
-                          />
-                        </Grid>
-                        <Grid size={6}>
-                          <FreeSoloChipsAutocomplete
-                            label="Emotional Arc Start"
-                            options={[...EMOTIONAL_ARC]}
-                            value={__section?.emotional_arc_start || []}
-                            limitTags={3}
-                            onChange={(__value) =>
-                              updateSectionSpecifications(__section_i, {
-                                emotional_arc_start: __value,
-                              })
-                            }
-                          />
-                        </Grid>
-                        <Grid size={6}>
-                          <FreeSoloChipsAutocomplete
-                            label="Emotional Arc End"
-                            options={[...EMOTIONAL_ARC]}
-                            value={__section?.emotional_arc_end || []}
-                            limitTags={3}
-                            onChange={(__value) =>
-                              updateSectionSpecifications(__section_i, {
-                                emotional_arc_end: __value,
-                              })
-                            }
-                          />
-                        </Grid>
-                        {/* <Grid size={12}>
-                          <Divider variant="fullWidth" component="div" />
-                        </Grid>
-                        <Grid size={12}>
-                          <Typography variant="h6">
-                            Lyrics Instructions
-                          </Typography>
-                        </Grid> */}
-                        <Grid size={6}>
-                          <TextField
-                            fullWidth
-                            value={__section?.lyric_already_written || ""}
-                            onChange={(__ev) =>
-                              updateSectionSpecifications(__section_i, {
-                                lyric_already_written: __ev.target.value,
-                              })
-                            }
-                            label="Lyrics Already Written"
-                            multiline
-                          />
-                        </Grid>
-                        <Grid size={6}>
-                          <FreeSoloChipsAutocomplete
-                            label="Brainstorm Words, Themes & Sentences"
-                            value={__section?.creative_brief || []}
-                            onChange={(__value) =>
-                              updateSectionSpecifications(__section_i, {
-                                creative_brief: __value,
-                              })
-                            }
-                          />
-                        </Grid>
-                        <Grid size={4}>
-                          <FreeSoloChipsAutocomplete
-                            label="Avoid Words, Themes & Sentences"
-                            value={__section?.avoid_brief || []}
-                            onChange={(__value) => {
-                              updateSectionSpecifications(__section_i, {
-                                avoid_brief: __value,
-                              });
-                            }}
-                          />
-                        </Grid>
-                        <Grid size={4}>
-                          <FreeSoloChipsAutocomplete
-                            label="Mandatory concepts"
-                            value={__section?.mandatory_concepts || []}
-                            onChange={(__value) => {
-                              updateSectionSpecifications(__section_i, {
-                                mandatory_concepts: __value,
-                              });
-                            }}
-                          />
-                        </Grid>
-                        <Grid size={4}>
-                          <FreeSoloChipsAutocomplete
-                            label="Tone Keywords"
-                            options={TONE_KEYWORDS}
-                            value={__section?.tone_keywords || []}
-                            onChange={(__value) => {
-                              updateSectionSpecifications(__section_i, {
-                                tone_keywords: __value,
-                              });
-                            }}
-                          />
-                        </Grid>
-                        <Grid size={3}>
-                          <TextField
-                            label="Lyric Style"
-                            value={__section?.lyric_style || ""}
-                            onChange={(__ev) => {
-                              updateSectionSpecifications(__section_i, {
-                                lyric_style: __ev?.target?.value,
-                              });
-                            }}
-                            fullWidth
-                          />
-                        </Grid>
-                        <Grid size={3}>
-                          <Autocomplete
-                            fullWidth
-                            options={VOICES}
-                            value={__section?.narrative?.voice || ""}
-                            onChange={(__ev, __value) => {
-                              updateNarrative(__section_i, {
-                                voice: __value,
-                              });
-                            }}
-                            renderInput={(params) => (
-                              <TextField {...params} label="Voice" />
-                            )}
-                          />
-                        </Grid>
-                        <Grid size={3}>
-                          <Autocomplete
-                            fullWidth
-                            options={GRAMMATICAL_NUMBER}
-                            value={
-                              __section?.narrative?.grammatical_number || ""
-                            }
-                            onChange={(__ev, __value) => {
-                              updateNarrative(__section_i, {
-                                grammatical_number: __value,
-                              });
-                            }}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                label="Grammatical Number"
-                              />
-                            )}
-                          />
-                        </Grid>
-                        <Grid size={3}>
-                          <Autocomplete
-                            fullWidth
-                            options={TENSES}
-                            value={__section?.narrative?.tense || ""}
-                            onChange={(__ev, __value) => {
-                              updateNarrative(__section_i, {
-                                tense: __value,
-                              });
-                            }}
-                            renderInput={(params) => (
-                              <TextField {...params} label="Tense" />
-                            )}
-                          />
-                        </Grid>
-                        <Grid size={3}>
-                          <Autocomplete
-                            fullWidth
-                            options={POSITIONS}
-                            value={__section?.narrative?.position || ""}
-                            onChange={(__ev, __value) => {
-                              updateNarrative(__section_i, {
-                                position: __value,
-                              });
-                            }}
-                            renderInput={(params) => (
-                              <TextField {...params} label="Position" />
-                            )}
-                          />
-                        </Grid>
-                        <Grid size={6}>
-                          <Autocomplete
-                            fullWidth
-                            multiple
-                            options={FIGURES_OF_SPEECH}
-                            limitTags={2}
-                            value={
-                              __section?.narrative?.figures_of_speech || []
-                            }
-                            onChange={(__ev, __value) => {
-                              updateNarrative(__section_i, {
-                                figures_of_speech: __value,
-                              });
-                            }}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                label="Figures of Speech"
-                              />
-                            )}
-                          />
-                        </Grid>
-                        <Grid size={3}>
-                          <Autocomplete
-                            fullWidth
-                            options={[...LEVEL]}
-                            value={__section?.narrative?.literalness || ""}
-                            onChange={(__ev, __value) => {
-                              updateNarrative(__section_i, {
-                                literalness: __value,
-                              });
-                            }}
-                            renderInput={(params) => (
-                              <TextField {...params} label="Literalness" />
-                            )}
-                          />
-                        </Grid>
-                        <Grid size={4}>
-                          <Autocomplete
-                            fullWidth
-                            multiple
-                            options={SENSES}
-                            limitTags={3}
-                            value={
-                              __section?.narrative?.sensorial_details || []
-                            }
-                            onChange={(__ev, __value) => {
-                              updateNarrative(__section_i, {
-                                sensorial_details: __value,
-                              });
-                            }}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                label="Sensorial Details"
-                              />
-                            )}
-                          />
-                        </Grid>
-                        <Grid size={4}>
-                          <Autocomplete
-                            fullWidth
-                            multiple
-                            options={PHRASE_TYPES}
-                            limitTags={2}
-                            value={__section?.narrative?.phrase_types || []}
-                            onChange={(__ev, __value) => {
-                              updateNarrative(__section_i, {
-                                phrase_types: __value,
-                              });
-                            }}
-                            renderInput={(params) => (
-                              <TextField {...params} label="Phrase Types" />
-                            )}
-                          />
-                        </Grid>
-                        <Grid size={4}>
-                          <Autocomplete
-                            fullWidth
-                            freeSolo
-                            options={RHYME_SCHEME}
-                            value={__section?.rhyme_scheme || ""}
-                            onChange={(__ev, __value) => {
-                              updateSectionSpecifications(__section_i, {
-                                rhyme_scheme: __value,
-                              });
-                            }}
-                            renderInput={(params) => (
-                              <TextField {...params} label="Rhyme Scheme" />
-                            )}
-                          />
-                        </Grid>
-                        <Grid size={6}>
-                          <Autocomplete
-                            fullWidth
-                            freeSolo
-                            multiple
-                            limitTags={2}
-                            options={RHYME_TYPES}
-                            value={__section?.rhyme_type || []}
-                            onChange={(__ev, __value) => {
-                              updateSectionSpecifications(__section_i, {
-                                rhyme_type: __value,
-                              });
-                            }}
-                            renderInput={(params) => (
-                              <TextField {...params} label="Rhyme Type" />
-                            )}
-                          />
-                        </Grid>
-                        <Grid size={3}>
-                          <Autocomplete
-                            fullWidth
-                            options={[...LEVEL]}
-                            value={__section?.syllabic_density || ""}
-                            onChange={(__ev, __value) => {
-                              updateSectionSpecifications(__section_i, {
-                                syllabic_density: __value,
-                              });
-                            }}
-                            renderInput={(params) => (
-                              <TextField {...params} label="Syllabic Density" />
-                            )}
-                          />
-                        </Grid>
-                        <Grid size={3}>
-                          <Autocomplete
-                            fullWidth
-                            options={[...LEVEL]}
-                            value={__section?.repetition_intensity || ""}
-                            onChange={(__ev, __value) => {
-                              updateSectionSpecifications(__section_i, {
-                                repetition_intensity: __value,
-                              });
-                            }}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                label="Repetition Intensity"
-                              />
-                            )}
-                          />
-                        </Grid>
-                        <Grid size={4}>
-                          <Autocomplete
-                            fullWidth
-                            options={SCALES}
-                            value={__section?.scale || null}
-                            onChange={(__ev, __value) => {
-                              updateSectionSpecifications(__section_i, {
-                                scale: __value,
-                              });
-                            }}
-                            renderInput={(params) => (
-                              <TextField {...params} label="Scale" />
-                            )}
-                          />
-                        </Grid>
-                        <Grid size={2}>
-                          <NumberField
-                            label="Bars"
-                            value={__section?.length_in_bars || ""}
-                            onChange={(__ev: any) => {
-                              updateSectionSpecifications(__section_i, {
-                                length_in_bars: __ev?.target?.value,
-                              });
-                            }}
-                            max={300}
-                          />
-                        </Grid>
-                        <Grid size={3}>
-                          <Autocomplete
-                            fullWidth
-                            options={LENGTHS}
-                            value={__section?.notes_length || null}
-                            onChange={(__ev, __value) => {
-                              updateSectionSpecifications(__section_i, {
-                                notes_length: __value,
-                              });
-                            }}
-                            renderInput={(params) => (
-                              <TextField {...params} label="Notes Length" />
-                            )}
-                          />
-                        </Grid>
-                        <Grid size={3}>
-                          <Autocomplete
-                            fullWidth
-                            options={LEVEL}
-                            value={__section?.spaces_between_lines || null}
-                            onChange={(__ev, __value) => {
-                              updateSectionSpecifications(__section_i, {
-                                spaces_between_lines: __value,
-                              });
-                            }}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                label="Space Between Lines"
-                              />
-                            )}
-                          />
-                        </Grid>
-                        <Grid size={3}>
-                          <Autocomplete
-                            fullWidth
-                            options={LEVEL}
-                            value={__section?.density_of_notes || null}
-                            onChange={(__ev, __value) => {
-                              updateSectionSpecifications(__section_i, {
-                                density_of_notes: __value,
-                              });
-                            }}
-                            renderInput={(params) => (
-                              <TextField {...params} label="Density of Notes" />
-                            )}
-                          />
-                        </Grid>
-                      </Grid>
-                    </AccordionDetails>
-                    <AccordionActions>
-                      <Button
-                        size="small"
-                        color="error"
-                        startIcon={<Delete />}
-                        onClick={() => {
-                          setinputs({
-                            ...inputs,
-                            sections_specifications:
-                              inputs.sections_specifications.filter(
-                                (__: any, __i: number) => __i !== __section_i
-                              ),
-                          });
-                        }}
-                      >
-                        Remove Section
-                      </Button>
-                    </AccordionActions>
-                  </Accordion>
-                )
-              )}
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={({ active, over }) => {
+                  if (!over || active.id === over.id) return;
+
+                  const oldIndex = inputs?.sections_specifications?.findIndex(
+                    (s: any) => s.id === active.id
+                  );
+                  const newIndex = inputs?.sections_specifications?.findIndex(
+                    (s: any) => s.id === over.id
+                  );
+
+                  setinputs({
+                    ...inputs,
+                    sections_specifications: arrayMove(
+                      inputs?.sections_specifications,
+                      oldIndex,
+                      newIndex
+                    ),
+                  });
+                }}
+              >
+                <SortableContext
+                  items={inputs?.sections_specifications?.map((s: any) => s.id)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  {inputs?.sections_specifications?.map(
+                    (__section: any, __section_i: any) => (
+                      <SortableSection key={__section.id} id={__section.id}>
+                        {({ attributes, listeners }: any) => (
+                          <>
+                            <Accordion
+                              defaultExpanded={false}
+                              // defaultExpanded={!__section?.section_type}
+                              key={__section?.id}
+                              sx={{ mb: 2 }}
+                            >
+                              <AccordionSummary
+                                sx={{
+                                  "& .MuiAccordionSummary-expandIconWrapper": {
+                                    transform: "none !important",
+                                    transition: "none !important",
+                                  },
+                                }}
+                                expandIcon={
+                                  <>
+                                    <Box
+                                      sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: 0.5,
+                                        backgroundColor: "action.hover",
+                                        borderRadius: 3,
+                                        padding: "0 .5rem",
+                                        mr: 2,
+                                      }}
+                                    >
+                                      <Delete
+                                        fontSize="small"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setinputs({
+                                            ...inputs,
+                                            sections_specifications:
+                                              inputs.sections_specifications.filter(
+                                                (__: any, __i: number) =>
+                                                  __i !== __section_i
+                                              ),
+                                          });
+                                        }}
+                                        sx={{
+                                          padding: ".5rem .5rem .5rem .25rem",
+                                          width: 20,
+                                          height: 20,
+                                        }}
+                                      />
+                                      <ContentCopy
+                                        fontSize="small"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          duplicateSection(__section);
+                                        }}
+                                        sx={{
+                                          padding: ".25rem",
+                                          width: 18,
+                                          height: 18,
+                                        }}
+                                      />
+                                    </Box>
+                                    <Box
+                                      sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                      }}
+                                    >
+                                      <ExpandMore />
+                                    </Box>
+                                  </>
+                                }
+                                aria-controls="panel3-content"
+                                id="panel3-header"
+                                {...attributes}
+                              >
+                                <Typography
+                                  component="div"
+                                  sx={{ display: "flex", alignItems: "center" }}
+                                >
+                                  <DragIndicator
+                                    sx={{ mr: 1 }}
+                                    fontSize="small"
+                                    {...listeners}
+                                    onClick={(e: any) => e.stopPropagation()}
+                                  />
+                                  {__section.section_type || "Untitled Section"}
+                                  <Box
+                                    sx={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                      gap: 1,
+                                      ml: "auto",
+                                    }}
+                                    onClick={(e) => e.stopPropagation()}
+                                  ></Box>
+                                </Typography>
+                              </AccordionSummary>
+                              <AccordionDetails>
+                                <Grid container spacing={2}>
+                                  <Grid size={2}>
+                                    <Autocomplete
+                                      freeSolo
+                                      fullWidth
+                                      options={SECTION_TYPES}
+                                      value={__section?.section_type || ""}
+                                      onInputChange={(__ev, __value) => {
+                                        updateSectionSpecifications(
+                                          __section_i,
+                                          {
+                                            section_type: __value,
+                                          }
+                                        );
+                                      }}
+                                      renderInput={(params) => (
+                                        <TextField
+                                          {...params}
+                                          label="Section Type"
+                                        />
+                                      )}
+                                    />
+                                  </Grid>{" "}
+                                  <Grid size={4}>
+                                    <FreeSoloChipsAutocomplete
+                                      label="Artistic Influences"
+                                      value={
+                                        __section?.artistic_influences || []
+                                      }
+                                      limitTags={2}
+                                      onChange={(__value) =>
+                                        updateSectionSpecifications(
+                                          __section_i,
+                                          {
+                                            artistic_influences: __value,
+                                          }
+                                        )
+                                      }
+                                    />
+                                  </Grid>
+                                  <Grid size={3}>
+                                    <Autocomplete
+                                      fullWidth
+                                      options={LEVEL}
+                                      value={__section?.energy_level || ""}
+                                      onChange={(__ev, __value) => {
+                                        updateSectionSpecifications(
+                                          __section_i,
+                                          {
+                                            energy_level: __value,
+                                          }
+                                        );
+                                      }}
+                                      renderInput={(params) => (
+                                        <TextField
+                                          {...params}
+                                          label="Energy Level"
+                                        />
+                                      )}
+                                    />
+                                  </Grid>
+                                  <Grid size={3}>
+                                    <Autocomplete
+                                      fullWidth
+                                      options={ENERGY_CURVE}
+                                      value={__section?.energy_curve || ""}
+                                      onChange={(__ev, __value) => {
+                                        updateSectionSpecifications(
+                                          __section_i,
+                                          {
+                                            energy_curve: __value,
+                                          }
+                                        );
+                                      }}
+                                      renderInput={(params) => (
+                                        <TextField
+                                          {...params}
+                                          label="Energy Curve"
+                                        />
+                                      )}
+                                    />
+                                  </Grid>
+                                  <Grid size={6}>
+                                    <FreeSoloChipsAutocomplete
+                                      label="Emotional Arc Start"
+                                      options={[...EMOTIONAL_ARC]}
+                                      value={
+                                        __section?.emotional_arc_start || []
+                                      }
+                                      limitTags={3}
+                                      onChange={(__value) =>
+                                        updateSectionSpecifications(
+                                          __section_i,
+                                          {
+                                            emotional_arc_start: __value,
+                                          }
+                                        )
+                                      }
+                                    />
+                                  </Grid>
+                                  <Grid size={6}>
+                                    <FreeSoloChipsAutocomplete
+                                      label="Emotional Arc End"
+                                      options={[...EMOTIONAL_ARC]}
+                                      value={__section?.emotional_arc_end || []}
+                                      limitTags={3}
+                                      onChange={(__value) =>
+                                        updateSectionSpecifications(
+                                          __section_i,
+                                          {
+                                            emotional_arc_end: __value,
+                                          }
+                                        )
+                                      }
+                                    />
+                                  </Grid>
+                                  {/* <Grid size={12}>
+                                <Divider variant="fullWidth" component="div" />
+                              </Grid>
+                              <Grid size={12}>
+                                <Typography variant="h6">
+                                  Lyrics Instructions
+                                </Typography>
+                              </Grid> */}
+                                  <Grid size={6}>
+                                    <TextField
+                                      fullWidth
+                                      value={
+                                        __section?.lyric_already_written || ""
+                                      }
+                                      onChange={(__ev) =>
+                                        updateSectionSpecifications(
+                                          __section_i,
+                                          {
+                                            lyric_already_written:
+                                              __ev.target.value,
+                                          }
+                                        )
+                                      }
+                                      label="Lyrics Already Written"
+                                      multiline
+                                    />
+                                  </Grid>
+                                  <Grid size={6}>
+                                    <FreeSoloChipsAutocomplete
+                                      label="Brainstorm Words, Themes & Sentences"
+                                      value={__section?.creative_brief || []}
+                                      onChange={(__value) =>
+                                        updateSectionSpecifications(
+                                          __section_i,
+                                          {
+                                            creative_brief: __value,
+                                          }
+                                        )
+                                      }
+                                    />
+                                  </Grid>
+                                  <Grid size={4}>
+                                    <FreeSoloChipsAutocomplete
+                                      label="Avoid Words, Themes & Sentences"
+                                      value={__section?.avoid_brief || []}
+                                      onChange={(__value) => {
+                                        updateSectionSpecifications(
+                                          __section_i,
+                                          {
+                                            avoid_brief: __value,
+                                          }
+                                        );
+                                      }}
+                                    />
+                                  </Grid>
+                                  <Grid size={4}>
+                                    <FreeSoloChipsAutocomplete
+                                      label="Mandatory concepts"
+                                      value={
+                                        __section?.mandatory_concepts || []
+                                      }
+                                      onChange={(__value) => {
+                                        updateSectionSpecifications(
+                                          __section_i,
+                                          {
+                                            mandatory_concepts: __value,
+                                          }
+                                        );
+                                      }}
+                                    />
+                                  </Grid>
+                                  <Grid size={4}>
+                                    <FreeSoloChipsAutocomplete
+                                      label="Tone Keywords"
+                                      options={TONE_KEYWORDS}
+                                      value={__section?.tone_keywords || []}
+                                      onChange={(__value) => {
+                                        updateSectionSpecifications(
+                                          __section_i,
+                                          {
+                                            tone_keywords: __value,
+                                          }
+                                        );
+                                      }}
+                                    />
+                                  </Grid>
+                                  <Grid size={3}>
+                                    {/* <TextField
+                                  label="Lyric Style"
+                                  value={__section?.lyric_style || ""}
+                                  onChange={(__ev) => {
+                                    updateSectionSpecifications(__section_i, {
+                                      lyric_style: __ev?.target?.value,
+                                    });
+                                  }}
+                                  fullWidth
+                                /> */}
+                                    <Autocomplete
+                                      fullWidth
+                                      options={STYLES}
+                                      value={__section?.lyric_style || ""}
+                                      onChange={(__ev, __value) => {
+                                        updateSectionSpecifications(
+                                          __section_i,
+                                          {
+                                            lyric_style: __value,
+                                          }
+                                        );
+                                      }}
+                                      renderInput={(params) => (
+                                        <TextField
+                                          {...params}
+                                          label="Lyrical Style"
+                                        />
+                                      )}
+                                    />
+                                  </Grid>
+                                  <Grid size={3}>
+                                    <Autocomplete
+                                      fullWidth
+                                      options={VOICES}
+                                      value={__section?.narrative?.voice || ""}
+                                      onChange={(__ev, __value) => {
+                                        updateNarrative(__section_i, {
+                                          voice: __value,
+                                        });
+                                      }}
+                                      renderInput={(params) => (
+                                        <TextField {...params} label="Voice" />
+                                      )}
+                                    />
+                                  </Grid>
+                                  <Grid size={3}>
+                                    <Autocomplete
+                                      fullWidth
+                                      options={GRAMMATICAL_NUMBER}
+                                      value={
+                                        __section?.narrative
+                                          ?.grammatical_number || ""
+                                      }
+                                      onChange={(__ev, __value) => {
+                                        updateNarrative(__section_i, {
+                                          grammatical_number: __value,
+                                        });
+                                      }}
+                                      renderInput={(params) => (
+                                        <TextField
+                                          {...params}
+                                          label="Grammatical Number"
+                                        />
+                                      )}
+                                    />
+                                  </Grid>
+                                  <Grid size={3}>
+                                    <Autocomplete
+                                      fullWidth
+                                      options={TENSES}
+                                      value={__section?.narrative?.tense || ""}
+                                      onChange={(__ev, __value) => {
+                                        updateNarrative(__section_i, {
+                                          tense: __value,
+                                        });
+                                      }}
+                                      renderInput={(params) => (
+                                        <TextField {...params} label="Tense" />
+                                      )}
+                                    />
+                                  </Grid>
+                                  <Grid size={3}>
+                                    <Autocomplete
+                                      fullWidth
+                                      options={POSITIONS}
+                                      value={
+                                        __section?.narrative?.position || ""
+                                      }
+                                      onChange={(__ev, __value) => {
+                                        updateNarrative(__section_i, {
+                                          position: __value,
+                                        });
+                                      }}
+                                      renderInput={(params) => (
+                                        <TextField
+                                          {...params}
+                                          label="Position"
+                                        />
+                                      )}
+                                    />
+                                  </Grid>
+                                  <Grid size={6}>
+                                    <Autocomplete
+                                      fullWidth
+                                      multiple
+                                      options={FIGURES_OF_SPEECH}
+                                      limitTags={2}
+                                      value={
+                                        __section?.narrative
+                                          ?.figures_of_speech || []
+                                      }
+                                      onChange={(__ev, __value) => {
+                                        updateNarrative(__section_i, {
+                                          figures_of_speech: __value,
+                                        });
+                                      }}
+                                      renderInput={(params) => (
+                                        <TextField
+                                          {...params}
+                                          label="Figures of Speech"
+                                        />
+                                      )}
+                                    />
+                                  </Grid>
+                                  <Grid size={3}>
+                                    <Autocomplete
+                                      fullWidth
+                                      options={[...LEVEL]}
+                                      value={
+                                        __section?.narrative?.literalness || ""
+                                      }
+                                      onChange={(__ev, __value) => {
+                                        updateNarrative(__section_i, {
+                                          literalness: __value,
+                                        });
+                                      }}
+                                      renderInput={(params) => (
+                                        <TextField
+                                          {...params}
+                                          label="Literalness"
+                                        />
+                                      )}
+                                    />
+                                  </Grid>
+                                  <Grid size={4}>
+                                    <Autocomplete
+                                      fullWidth
+                                      multiple
+                                      options={SENSES}
+                                      limitTags={3}
+                                      value={
+                                        __section?.narrative
+                                          ?.sensorial_details || []
+                                      }
+                                      onChange={(__ev, __value) => {
+                                        updateNarrative(__section_i, {
+                                          sensorial_details: __value,
+                                        });
+                                      }}
+                                      renderInput={(params) => (
+                                        <TextField
+                                          {...params}
+                                          label="Sensorial Details"
+                                        />
+                                      )}
+                                    />
+                                  </Grid>
+                                  <Grid size={4}>
+                                    <Autocomplete
+                                      fullWidth
+                                      multiple
+                                      options={PHRASE_TYPES}
+                                      limitTags={2}
+                                      value={
+                                        __section?.narrative?.phrase_types || []
+                                      }
+                                      onChange={(__ev, __value) => {
+                                        updateNarrative(__section_i, {
+                                          phrase_types: __value,
+                                        });
+                                      }}
+                                      renderInput={(params) => (
+                                        <TextField
+                                          {...params}
+                                          label="Phrase Types"
+                                        />
+                                      )}
+                                    />
+                                  </Grid>
+                                  <Grid size={4}>
+                                    <Autocomplete
+                                      fullWidth
+                                      freeSolo
+                                      options={RHYME_SCHEME}
+                                      value={__section?.rhyme_scheme || ""}
+                                      onChange={(__ev, __value) => {
+                                        updateSectionSpecifications(
+                                          __section_i,
+                                          {
+                                            rhyme_scheme: __value,
+                                          }
+                                        );
+                                      }}
+                                      renderInput={(params) => (
+                                        <TextField
+                                          {...params}
+                                          label="Rhyme Scheme"
+                                        />
+                                      )}
+                                    />
+                                  </Grid>
+                                  <Grid size={6}>
+                                    <Autocomplete
+                                      fullWidth
+                                      freeSolo
+                                      multiple
+                                      limitTags={2}
+                                      options={RHYME_TYPES}
+                                      value={__section?.rhyme_type || []}
+                                      onChange={(__ev, __value) => {
+                                        updateSectionSpecifications(
+                                          __section_i,
+                                          {
+                                            rhyme_type: __value,
+                                          }
+                                        );
+                                      }}
+                                      renderInput={(params) => (
+                                        <TextField
+                                          {...params}
+                                          label="Rhyme Type"
+                                        />
+                                      )}
+                                    />
+                                  </Grid>
+                                  <Grid size={3}>
+                                    <Autocomplete
+                                      fullWidth
+                                      options={[...LEVEL]}
+                                      value={__section?.syllabic_density || ""}
+                                      onChange={(__ev, __value) => {
+                                        updateSectionSpecifications(
+                                          __section_i,
+                                          {
+                                            syllabic_density: __value,
+                                          }
+                                        );
+                                      }}
+                                      renderInput={(params) => (
+                                        <TextField
+                                          {...params}
+                                          label="Syllabic Density"
+                                        />
+                                      )}
+                                    />
+                                  </Grid>
+                                  <Grid size={3}>
+                                    <Autocomplete
+                                      fullWidth
+                                      options={[...LEVEL]}
+                                      value={
+                                        __section?.repetition_intensity || ""
+                                      }
+                                      onChange={(__ev, __value) => {
+                                        updateSectionSpecifications(
+                                          __section_i,
+                                          {
+                                            repetition_intensity: __value,
+                                          }
+                                        );
+                                      }}
+                                      renderInput={(params) => (
+                                        <TextField
+                                          {...params}
+                                          label="Repetition Intensity"
+                                        />
+                                      )}
+                                    />
+                                  </Grid>
+                                  <Grid size={4}>
+                                    <Autocomplete
+                                      fullWidth
+                                      options={SCALES}
+                                      value={__section?.scale || null}
+                                      onChange={(__ev, __value) => {
+                                        updateSectionSpecifications(
+                                          __section_i,
+                                          {
+                                            scale: __value,
+                                          }
+                                        );
+                                      }}
+                                      renderInput={(params) => (
+                                        <TextField {...params} label="Scale" />
+                                      )}
+                                    />
+                                  </Grid>
+                                  <Grid size={2}>
+                                    <NumberField
+                                      label="Bars"
+                                      value={__section?.length_in_bars || ""}
+                                      onChange={(__ev: any) => {
+                                        updateSectionSpecifications(
+                                          __section_i,
+                                          {
+                                            length_in_bars: __ev?.target?.value,
+                                          }
+                                        );
+                                      }}
+                                      max={300}
+                                    />
+                                  </Grid>
+                                  <Grid size={3}>
+                                    <Autocomplete
+                                      fullWidth
+                                      options={LENGTHS}
+                                      value={__section?.notes_length || null}
+                                      onChange={(__ev, __value) => {
+                                        updateSectionSpecifications(
+                                          __section_i,
+                                          {
+                                            notes_length: __value,
+                                          }
+                                        );
+                                      }}
+                                      renderInput={(params) => (
+                                        <TextField
+                                          {...params}
+                                          label="Notes Length"
+                                        />
+                                      )}
+                                    />
+                                  </Grid>
+                                  <Grid size={3}>
+                                    <Autocomplete
+                                      fullWidth
+                                      options={LEVEL}
+                                      value={
+                                        __section?.spaces_between_lines || null
+                                      }
+                                      onChange={(__ev, __value) => {
+                                        updateSectionSpecifications(
+                                          __section_i,
+                                          {
+                                            spaces_between_lines: __value,
+                                          }
+                                        );
+                                      }}
+                                      renderInput={(params) => (
+                                        <TextField
+                                          {...params}
+                                          label="Space Between Lines"
+                                        />
+                                      )}
+                                    />
+                                  </Grid>
+                                  <Grid size={3}>
+                                    <Autocomplete
+                                      fullWidth
+                                      options={LEVEL}
+                                      value={
+                                        __section?.density_of_notes || null
+                                      }
+                                      onChange={(__ev, __value) => {
+                                        updateSectionSpecifications(
+                                          __section_i,
+                                          {
+                                            density_of_notes: __value,
+                                          }
+                                        );
+                                      }}
+                                      renderInput={(params) => (
+                                        <TextField
+                                          {...params}
+                                          label="Density of Notes"
+                                        />
+                                      )}
+                                    />
+                                  </Grid>
+                                </Grid>
+                              </AccordionDetails>
+                              <AccordionActions>
+                                <Button
+                                  size="small"
+                                  color="error"
+                                  startIcon={<Delete />}
+                                  onClick={() => {
+                                    setinputs({
+                                      ...inputs,
+                                      sections_specifications:
+                                        inputs.sections_specifications.filter(
+                                          (__: any, __i: number) =>
+                                            __i !== __section_i
+                                        ),
+                                    });
+                                  }}
+                                >
+                                  Remove Section
+                                </Button>
+                              </AccordionActions>
+                            </Accordion>
+                          </>
+                        )}
+                      </SortableSection>
+                    )
+                  )}
+                </SortableContext>
+              </DndContext>
             </Grid>
             <Grid size={12}>
               <Button
