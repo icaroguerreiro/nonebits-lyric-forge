@@ -55,10 +55,13 @@ export default function FreeSoloChipsAutocomplete({
         setPending(newInput);
       }}
       onBlur={addPending}
-      onKeyDown={(e) => {
+      onKeyDown={(__ev: any) => {
         onKeyDown();
-        if (e.key === "Enter" || e.key === "Tab") {
-          e.preventDefault();
+        if (
+          !!__ev?.target?.value &&
+          (__ev.key === "Enter" || __ev.key === "Tab")
+        ) {
+          __ev.preventDefault();
           addPending();
         }
       }}
