@@ -18,11 +18,14 @@ export const LEVEL = [
 ] as const;
 
 export const ENERGY_CURVE = [
-  "Flat",
-  "Gradual Rise",
-  "Gradual Fall",
-  "Peak",
+  "Rise",
+  "Fall",
+  "Rise-Fall",
+  "Fall-Rise",
   "Wave",
+  "Spike",
+  "Plateau",
+  "Flat",
 ] as const;
 
 export const EMOTIONAL_ARC = [
@@ -213,7 +216,10 @@ export const SENSES = [
   "Auditory",
   "Tactile",
   "Olfactory",
+  "Gustatory",
   "Kinesthetic",
+  "Vestibular",
+  "Interoceptive",
 ];
 
 export const PHRASE_TYPES = [
