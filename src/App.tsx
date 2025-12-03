@@ -3,7 +3,6 @@ import { WrapperProvider } from "./contexts/wrapper";
 import { ToastProvider } from "./contexts/toast";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { CssBaseline } from "@mui/material";
-import { Padding } from "@mui/icons-material";
 
 const customTheme = createTheme({
   palette: {
@@ -13,8 +12,8 @@ const customTheme = createTheme({
     MuiCssBaseline: {
       styleOverrides: {
         body: {
-          backgroundColor: "#333 !important", // <-- sua cor aqui
-          color: "#fff", // opcional, caso queira texto claro
+          backgroundColor: "#333 !important",
+          color: "#fff",
           padding: "1rem",
         },
       },
