@@ -11,8 +11,7 @@ interface FieldWithTooltipProps {
 export default function InputTooltip({
   tooltip,
   children,
-  enterDelay = 500,
-  leaveDelay = 50,
+  enterDelay = 1000,
 }: FieldWithTooltipProps) {
   const [open, setOpen] = useState(false);
 
@@ -22,13 +21,11 @@ export default function InputTooltip({
   useEffect(() => {
     return () => {
       if (openTimer.current) clearTimeout(openTimer.current);
-      if (closeTimer.current) clearTimeout(closeTimer.current);
     };
   }, []);
 
   const closeNow = () => {
     if (openTimer.current) clearTimeout(openTimer.current);
-    if (closeTimer.current) clearTimeout(closeTimer.current);
     openTimer.current = null;
     closeTimer.current = null;
     setOpen(false);
@@ -45,9 +42,7 @@ export default function InputTooltip({
   const handleMouseLeave = () => {
     if (openTimer.current) clearTimeout(openTimer.current);
 
-    closeTimer.current = window.setTimeout(() => {
-      setOpen(false);
-    }, leaveDelay);
+    setOpen(false);
   };
 
   const enhancedChild = React.cloneElement(children, {
@@ -74,8 +69,8 @@ export default function InputTooltip({
       disableTouchListener
     >
       <Box
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
+        onMouseOver={handleMouseEnter}
+        onMouseOut={handleMouseLeave}
         sx={{ width: "100%" }}
       >
         {enhancedChild}

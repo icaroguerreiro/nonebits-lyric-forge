@@ -9,6 +9,9 @@ interface Props {
   options?: string[];
   fullWidth?: boolean;
   allowDuplicates?: boolean;
+  onFocus?: Function;
+  onClick?: Function;
+  onKeyDown?: Function;
 }
 
 export default function FreeSoloChipsAutocomplete({
@@ -19,6 +22,9 @@ export default function FreeSoloChipsAutocomplete({
   options = [],
   fullWidth = true,
   allowDuplicates = false,
+  onFocus = () => {},
+  onClick = () => {},
+  onKeyDown = () => {},
 }: Props) {
   const [pending, setPending] = useState("");
 
@@ -50,6 +56,7 @@ export default function FreeSoloChipsAutocomplete({
       }}
       onBlur={addPending}
       onKeyDown={(e) => {
+        onKeyDown();
         if (e.key === "Enter" || e.key === "Tab") {
           e.preventDefault();
           addPending();
@@ -71,6 +78,12 @@ export default function FreeSoloChipsAutocomplete({
 
         // fallback para outros casos
         onChange(newValue);
+      }}
+      onFocus={() => {
+        onFocus();
+      }}
+      onClick={() => {
+        onClick();
       }}
       renderInput={(params) => <TextField {...params} label={label} />}
     />
