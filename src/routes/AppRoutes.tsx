@@ -9,8 +9,7 @@ export function AppRoutes() {
       <Routes>
         <Route element={<MainTemplate />}>
           <Route path="/" element={<Home />} />
-          <Route path="/draft" element={<Home />} />
-          <Route path="/draft/:draft?" element={<Home />} />
+          <Route path="/:draft?" element={<Home />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
