@@ -9,7 +9,6 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  AccordionActions,
   Typography,
   SpeedDial,
   SpeedDialIcon,
@@ -76,6 +75,7 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
+import InputTooltip from "../../components/ui/InputTooltip";
 
 export default function Home() {
   const { draft } = useParams();
@@ -249,81 +249,147 @@ export default function Home() {
         <CardContent>
           <Grid container spacing={2}>
             <Grid size={3}>
-              <TextField
-                label="Song Title"
-                value={inputs?.global_settings?.title || ""}
-                onChange={(__ev) => {
-                  updateGlobalSettings({
-                    title: __ev.target.value,
-                  });
-                }}
-                fullWidth
-              />
+              <InputTooltip
+                tooltip={
+                  <p>
+                    The working title of the song. It helps guide the general
+                    theme and mood.
+                  </p>
+                }
+              >
+                <TextField
+                  label="Song Title"
+                  value={inputs?.global_settings?.title || ""}
+                  onChange={(__ev) => {
+                    updateGlobalSettings({
+                      title: __ev.target.value,
+                    });
+                  }}
+                  fullWidth
+                />
+              </InputTooltip>
             </Grid>
             <Grid size={3}>
-              <Autocomplete
-                freeSolo
-                options={LANGUAGES}
-                value={inputs?.global_settings?.language || ""}
-                onInputChange={(__ev, __value) => {
-                  updateGlobalSettings({
-                    language: __value,
-                  });
-                }}
-                renderInput={(params) => (
-                  <TextField {...params} label="Language" />
-                )}
-                fullWidth
-              />
+              <InputTooltip
+                tooltip={
+                  <p>
+                    The language the lyrics will be written in. Affects tone,
+                    rhythm, and word choice.
+                  </p>
+                }
+              >
+                <Autocomplete
+                  freeSolo
+                  options={LANGUAGES}
+                  value={inputs?.global_settings?.language || ""}
+                  onInputChange={(__ev, __value) => {
+                    updateGlobalSettings({
+                      language: __value,
+                    });
+                  }}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Language" />
+                  )}
+                  fullWidth
+                />
+              </InputTooltip>
             </Grid>
             <Grid size={2}>
-              <NumberField
-                label="Tempo (BPM)"
-                value={inputs?.global_settings?.tempo || ""}
-                onChange={(__ev: any) => {
-                  updateGlobalSettings({
-                    tempo: Number(__ev.target.value),
-                  });
-                }}
-                max={300}
-              />
+              <InputTooltip
+                tooltip={
+                  <p>
+                    The speed of the song in beats per minute. Higher values
+                    feel faster and more energetic.
+                  </p>
+                }
+              >
+                <NumberField
+                  label="Tempo (BPM)"
+                  value={inputs?.global_settings?.tempo || ""}
+                  onChange={(__ev: any) => {
+                    updateGlobalSettings({
+                      tempo: Number(__ev.target.value),
+                    });
+                  }}
+                  max={300}
+                />
+              </InputTooltip>
             </Grid>
             <Grid size={4}>
-              <FreeSoloChipsAutocomplete
-                label="Residual Emotion(s)"
-                options={[...EMOTIONAL_ARC]}
-                value={inputs?.global_settings?.residual_emotion || []}
-                limitTags={3}
-                onChange={(__value) => {
-                  updateGlobalSettings({
-                    residual_emotion: __value,
-                  });
-                }}
-              />
+              <InputTooltip
+                tooltip={
+                  <>
+                    <p>
+                      The emotional atmosphere that should remain present
+                      throughout the entire song.
+                    </p>
+                    <p>You can choose multiple emotions to blend.</p>
+                  </>
+                }
+              >
+                <FreeSoloChipsAutocomplete
+                  label="Residual Emotion(s)"
+                  options={[...EMOTIONAL_ARC]}
+                  value={inputs?.global_settings?.residual_emotion || []}
+                  limitTags={3}
+                  onChange={(__value) => {
+                    updateGlobalSettings({
+                      residual_emotion: __value,
+                    });
+                  }}
+                />
+              </InputTooltip>
             </Grid>
             <Grid size={6}>
-              <FreeSoloChipsAutocomplete
-                label="Track Brainstorm Words"
-                value={inputs?.global_settings?.brainstorming_words || []}
-                limitTags={3}
-                onChange={(__value) => {
-                  updateGlobalSettings({
-                    brainstorming_words: __value,
-                  });
-                }}
-              />
+              <InputTooltip
+                tooltip={
+                  <>
+                    <p>
+                      A list of thematic or atmospheric words that help guide
+                      the lyrical mood.
+                    </p>
+                    <p>These words influence metaphors, imagery, and tone.</p>
+                  </>
+                }
+              >
+                <FreeSoloChipsAutocomplete
+                  label="Track Brainstorm Words"
+                  value={inputs?.global_settings?.brainstorming_words || []}
+                  limitTags={3}
+                  onChange={(__value) => {
+                    updateGlobalSettings({
+                      brainstorming_words: __value,
+                    });
+                  }}
+                />
+              </InputTooltip>
             </Grid>
             <Grid size={6}>
-              <TextField
-                label="General Instructions"
-                value={inputs?.global_settings?.general_instructions || ""}
-                onChange={(__ev) => {
-                  updateGlobalSettings({
-                    general_instructions: __ev.target.value,
-                  });
-                }}
-                fullWidth
-              />
+              <InputTooltip
+                tooltip={
+                  <>
+                    <p>
+                      A higher-level description of what the AI should focus on
+                      when generating the lyrics.
+                    </p>
+                    <p>
+                      Use this field to define tone, narrative approach, or
+                      structural ideas.
+                    </p>
+                  </>
+                }
+              >
+                <TextField
+                  label="General Instructions"
+                  value={inputs?.global_settings?.general_instructions || ""}
+                  onChange={(__ev) => {
+                    updateGlobalSettings({
+                      general_instructions: __ev.target.value,
+                    });
+                  }}
+                  fullWidth
+                />
+              </InputTooltip>
             </Grid>
           </Grid>
         </CardContent>
@@ -461,119 +527,207 @@ export default function Home() {
                               <AccordionDetails>
                                 <Grid container spacing={2}>
                                   <Grid size={2}>
-                                    <Autocomplete
-                                      freeSolo
-                                      fullWidth
-                                      options={SECTION_TYPES}
-                                      value={__section?.section_type || ""}
-                                      onInputChange={(__ev, __value) => {
-                                        updateSectionSpecifications(
-                                          __section_i,
-                                          {
-                                            section_type: __value,
-                                          }
-                                        );
-                                      }}
-                                      renderInput={(params) => (
-                                        <TextField
-                                          {...params}
-                                          label="Section Type"
-                                        />
-                                      )}
-                                    />
-                                  </Grid>{" "}
+                                    <InputTooltip
+                                      tooltip={
+                                        <>
+                                          <p>
+                                            The musical section (e.g., Verse,
+                                            Chorus, Bridge).
+                                          </p>
+                                          <p>
+                                            This helps shape the expected
+                                            structure and energy of the lyrics.
+                                          </p>
+                                        </>
+                                      }
+                                    >
+                                      <Autocomplete
+                                        freeSolo
+                                        fullWidth
+                                        options={SECTION_TYPES}
+                                        value={__section?.section_type || ""}
+                                        onInputChange={(__ev, __value) => {
+                                          updateSectionSpecifications(
+                                            __section_i,
+                                            {
+                                              section_type: __value,
+                                            }
+                                          );
+                                        }}
+                                        renderInput={(params) => (
+                                          <TextField
+                                            {...params}
+                                            label="Section Type"
+                                          />
+                                        )}
+                                      />
+                                    </InputTooltip>
+                                  </Grid>
                                   <Grid size={4}>
-                                    <FreeSoloChipsAutocomplete
-                                      label="Artistic Influences"
-                                      value={
-                                        __section?.artistic_influences || []
+                                    <InputTooltip
+                                      tooltip={
+                                        <>
+                                          <p>
+                                            Artists whose style should inspire
+                                            the writing.
+                                          </p>
+                                          <p>
+                                            Used to shape tone, vocabulary, and
+                                            phrasing.
+                                          </p>
+                                        </>
                                       }
-                                      limitTags={2}
-                                      onChange={(__value) =>
-                                        updateSectionSpecifications(
-                                          __section_i,
-                                          {
-                                            artistic_influences: __value,
-                                          }
-                                        )
-                                      }
-                                    />
+                                    >
+                                      <FreeSoloChipsAutocomplete
+                                        label="Artistic Influences"
+                                        value={
+                                          __section?.artistic_influences || []
+                                        }
+                                        limitTags={2}
+                                        onChange={(__value) =>
+                                          updateSectionSpecifications(
+                                            __section_i,
+                                            {
+                                              artistic_influences: __value,
+                                            }
+                                          )
+                                        }
+                                      />
+                                    </InputTooltip>
                                   </Grid>
                                   <Grid size={3}>
-                                    <Autocomplete
-                                      fullWidth
-                                      options={LEVEL}
-                                      value={__section?.energy_level || ""}
-                                      onChange={(__ev, __value) => {
-                                        updateSectionSpecifications(
-                                          __section_i,
-                                          {
-                                            energy_level: __value,
-                                          }
-                                        );
-                                      }}
-                                      renderInput={(params) => (
-                                        <TextField
-                                          {...params}
-                                          label="Energy Level"
-                                        />
-                                      )}
-                                    />
+                                    <InputTooltip
+                                      tooltip={
+                                        <>
+                                          <p>
+                                            Defines the intensity of this
+                                            specific section (low, medium,
+                                            high).
+                                          </p>
+                                          <p>
+                                            Affects pacing and emotional weight.
+                                          </p>
+                                        </>
+                                      }
+                                    >
+                                      <Autocomplete
+                                        fullWidth
+                                        options={LEVEL}
+                                        value={__section?.energy_level || ""}
+                                        onChange={(__ev, __value) => {
+                                          updateSectionSpecifications(
+                                            __section_i,
+                                            {
+                                              energy_level: __value,
+                                            }
+                                          );
+                                        }}
+                                        renderInput={(params) => (
+                                          <TextField
+                                            {...params}
+                                            label="Energy Level"
+                                          />
+                                        )}
+                                      />
+                                    </InputTooltip>
                                   </Grid>
                                   <Grid size={3}>
-                                    <Autocomplete
-                                      fullWidth
-                                      options={ENERGY_CURVE}
-                                      value={__section?.energy_curve || ""}
-                                      onChange={(__ev, __value) => {
-                                        updateSectionSpecifications(
-                                          __section_i,
-                                          {
-                                            energy_curve: __value,
-                                          }
-                                        );
-                                      }}
-                                      renderInput={(params) => (
-                                        <TextField
-                                          {...params}
-                                          label="Energy Curve"
-                                        />
-                                      )}
-                                    />
+                                    <InputTooltip
+                                      tooltip={
+                                        <>
+                                          <p>
+                                            How the energy should evolve inside
+                                            the section (e.g., gradual rise,
+                                            drop, steady).
+                                          </p>
+                                        </>
+                                      }
+                                    >
+                                      <Autocomplete
+                                        fullWidth
+                                        options={ENERGY_CURVE}
+                                        value={__section?.energy_curve || ""}
+                                        onChange={(__ev, __value) => {
+                                          updateSectionSpecifications(
+                                            __section_i,
+                                            {
+                                              energy_curve: __value,
+                                            }
+                                          );
+                                        }}
+                                        renderInput={(params) => (
+                                          <TextField
+                                            {...params}
+                                            label="Energy Curve"
+                                          />
+                                        )}
+                                      />
+                                    </InputTooltip>
                                   </Grid>
                                   <Grid size={6}>
-                                    <FreeSoloChipsAutocomplete
-                                      label="Emotional Arc Start"
-                                      options={[...EMOTIONAL_ARC]}
-                                      value={
-                                        __section?.emotional_arc_start || []
+                                    <InputTooltip
+                                      tooltip={
+                                        <>
+                                          <p>
+                                            The initial emotional state
+                                            represented in this section.
+                                          </p>
+                                          <p>
+                                            Used to build narrative progression.
+                                          </p>
+                                        </>
                                       }
-                                      limitTags={3}
-                                      onChange={(__value) =>
-                                        updateSectionSpecifications(
-                                          __section_i,
-                                          {
-                                            emotional_arc_start: __value,
-                                          }
-                                        )
-                                      }
-                                    />
+                                    >
+                                      <FreeSoloChipsAutocomplete
+                                        label="Emotional Arc Start"
+                                        options={[...EMOTIONAL_ARC]}
+                                        value={
+                                          __section?.emotional_arc_start || []
+                                        }
+                                        limitTags={3}
+                                        onChange={(__value) =>
+                                          updateSectionSpecifications(
+                                            __section_i,
+                                            {
+                                              emotional_arc_start: __value,
+                                            }
+                                          )
+                                        }
+                                      />
+                                    </InputTooltip>
                                   </Grid>
                                   <Grid size={6}>
-                                    <FreeSoloChipsAutocomplete
-                                      label="Emotional Arc End"
-                                      options={[...EMOTIONAL_ARC]}
-                                      value={__section?.emotional_arc_end || []}
-                                      limitTags={3}
-                                      onChange={(__value) =>
-                                        updateSectionSpecifications(
-                                          __section_i,
-                                          {
-                                            emotional_arc_end: __value,
-                                          }
-                                        )
+                                    <InputTooltip
+                                      tooltip={
+                                        <>
+                                          <p>
+                                            The emotional state the section
+                                            should reach by its end.
+                                          </p>
+                                          <p>
+                                            Helps create a sense of
+                                            transformation.
+                                          </p>
+                                        </>
                                       }
-                                    />
+                                    >
+                                      <FreeSoloChipsAutocomplete
+                                        label="Emotional Arc End"
+                                        options={[...EMOTIONAL_ARC]}
+                                        value={
+                                          __section?.emotional_arc_end || []
+                                        }
+                                        limitTags={3}
+                                        onChange={(__value) =>
+                                          updateSectionSpecifications(
+                                            __section_i,
+                                            {
+                                              emotional_arc_end: __value,
+                                            }
+                                          )
+                                        }
+                                      />
+                                    </InputTooltip>
                                   </Grid>
                                   {/* <Grid size={12}>
                                 <Divider variant="fullWidth" component="div" />
@@ -584,130 +738,209 @@ export default function Home() {
                                 </Typography>
                               </Grid> */}
                                   <Grid size={6}>
-                                    <TextField
-                                      fullWidth
-                                      value={
-                                        __section?.lyric_already_written || ""
+                                    <InputTooltip
+                                      tooltip={
+                                        <>
+                                          <p>
+                                            If you already have part of the
+                                            lyrics written, insert them here.
+                                          </p>
+                                          <p>
+                                            The AI will continue or refine based
+                                            on this content.
+                                          </p>
+                                        </>
                                       }
-                                      onChange={(__ev) =>
-                                        updateSectionSpecifications(
-                                          __section_i,
-                                          {
-                                            lyric_already_written:
-                                              __ev.target.value,
-                                          }
-                                        )
-                                      }
-                                      label="Lyrics Already Written"
-                                      multiline
-                                    />
+                                    >
+                                      <TextField
+                                        fullWidth
+                                        value={
+                                          __section?.lyric_already_written || ""
+                                        }
+                                        onChange={(__ev) =>
+                                          updateSectionSpecifications(
+                                            __section_i,
+                                            {
+                                              lyric_already_written:
+                                                __ev.target.value,
+                                            }
+                                          )
+                                        }
+                                        label="Lyrics Already Written"
+                                        multiline
+                                      />
+                                    </InputTooltip>
                                   </Grid>
                                   <Grid size={6}>
-                                    <FreeSoloChipsAutocomplete
-                                      label="Brainstorm Words, Themes & Sentences"
-                                      value={__section?.creative_brief || []}
-                                      onChange={(__value) =>
-                                        updateSectionSpecifications(
-                                          __section_i,
-                                          {
-                                            creative_brief: __value,
-                                          }
-                                        )
+                                    <InputTooltip
+                                      tooltip={
+                                        <>
+                                          <p>
+                                            Key concepts or images that must
+                                            inspire the section.
+                                          </p>
+                                          <p>
+                                            Useful for anchoring metaphors and
+                                            themes.
+                                          </p>
+                                        </>
                                       }
-                                    />
+                                    >
+                                      <FreeSoloChipsAutocomplete
+                                        label="Brainstorm Words, Themes & Sentences"
+                                        value={__section?.creative_brief || []}
+                                        onChange={(__value) =>
+                                          updateSectionSpecifications(
+                                            __section_i,
+                                            {
+                                              creative_brief: __value,
+                                            }
+                                          )
+                                        }
+                                      />
+                                    </InputTooltip>
                                   </Grid>
                                   <Grid size={4}>
-                                    <FreeSoloChipsAutocomplete
-                                      label="Avoid Words, Themes & Sentences"
-                                      value={__section?.avoid_brief || []}
-                                      onChange={(__value) => {
-                                        updateSectionSpecifications(
-                                          __section_i,
-                                          {
-                                            avoid_brief: __value,
-                                          }
-                                        );
-                                      }}
-                                    />
-                                  </Grid>
-                                  <Grid size={4}>
-                                    <FreeSoloChipsAutocomplete
-                                      label="Mandatory concepts"
-                                      value={
-                                        __section?.mandatory_concepts || []
+                                    <InputTooltip
+                                      tooltip={
+                                        <>
+                                          <p>
+                                            Words the AI must avoid using in the
+                                            lyrics.
+                                          </p>
+                                        </>
                                       }
-                                      onChange={(__value) => {
-                                        updateSectionSpecifications(
-                                          __section_i,
-                                          {
-                                            mandatory_concepts: __value,
-                                          }
-                                        );
-                                      }}
-                                    />
+                                    >
+                                      <FreeSoloChipsAutocomplete
+                                        label="Avoid Words, Themes & Sentences"
+                                        value={__section?.avoid_brief || []}
+                                        onChange={(__value) => {
+                                          updateSectionSpecifications(
+                                            __section_i,
+                                            {
+                                              avoid_brief: __value,
+                                            }
+                                          );
+                                        }}
+                                      />
+                                    </InputTooltip>
                                   </Grid>
                                   <Grid size={4}>
-                                    <FreeSoloChipsAutocomplete
-                                      label="Tone Keywords"
-                                      options={TONE_KEYWORDS}
-                                      value={__section?.tone_keywords || []}
-                                      onChange={(__value) => {
-                                        updateSectionSpecifications(
-                                          __section_i,
-                                          {
-                                            tone_keywords: __value,
-                                          }
-                                        );
-                                      }}
-                                    />
+                                    <InputTooltip
+                                      tooltip={
+                                        <>
+                                          <p>
+                                            Ideas or images that must appear in
+                                            the lyrics.
+                                          </p>
+                                        </>
+                                      }
+                                    >
+                                      <FreeSoloChipsAutocomplete
+                                        label="Mandatory concepts"
+                                        value={
+                                          __section?.mandatory_concepts || []
+                                        }
+                                        onChange={(__value) => {
+                                          updateSectionSpecifications(
+                                            __section_i,
+                                            {
+                                              mandatory_concepts: __value,
+                                            }
+                                          );
+                                        }}
+                                      />
+                                    </InputTooltip>
+                                  </Grid>
+                                  <Grid size={4}>
+                                    <InputTooltip
+                                      tooltip={
+                                        <>
+                                          <p>
+                                            Adjectives that dictate the mood or
+                                            emotional flavor of the section.
+                                          </p>
+                                        </>
+                                      }
+                                    >
+                                      <FreeSoloChipsAutocomplete
+                                        label="Tone Keywords"
+                                        options={TONE_KEYWORDS}
+                                        value={__section?.tone_keywords || []}
+                                        onChange={(__value) => {
+                                          updateSectionSpecifications(
+                                            __section_i,
+                                            {
+                                              tone_keywords: __value,
+                                            }
+                                          );
+                                        }}
+                                      />
+                                    </InputTooltip>
                                   </Grid>
                                   <Grid size={3}>
-                                    {/* <TextField
-                                  label="Lyric Style"
-                                  value={__section?.lyric_style || ""}
-                                  onChange={(__ev) => {
-                                    updateSectionSpecifications(__section_i, {
-                                      lyric_style: __ev?.target?.value,
-                                    });
-                                  }}
-                                  fullWidth
-                                /> */}
-                                    <Autocomplete
-                                      fullWidth
-                                      options={STYLES}
-                                      value={__section?.lyric_style || ""}
-                                      onChange={(__ev, __value) => {
-                                        updateSectionSpecifications(
-                                          __section_i,
-                                          {
-                                            lyric_style: __value,
-                                          }
-                                        );
-                                      }}
-                                      renderInput={(params) => (
-                                        <TextField
-                                          {...params}
-                                          label="Lyrical Style"
-                                        />
-                                      )}
-                                    />
+                                    <InputTooltip
+                                      tooltip={
+                                        <>
+                                          <p>
+                                            The overall writing style for the
+                                            section (e.g., poetic, raw,
+                                            narrative).
+                                          </p>
+                                        </>
+                                      }
+                                    >
+                                      <Autocomplete
+                                        fullWidth
+                                        options={STYLES}
+                                        value={__section?.lyric_style || ""}
+                                        onChange={(__ev, __value) => {
+                                          updateSectionSpecifications(
+                                            __section_i,
+                                            {
+                                              lyric_style: __value,
+                                            }
+                                          );
+                                        }}
+                                        renderInput={(params) => (
+                                          <TextField
+                                            {...params}
+                                            label="Lyrical Style"
+                                          />
+                                        )}
+                                      />
+                                    </InputTooltip>
                                   </Grid>
                                   <Grid size={3}>
-                                    <Autocomplete
-                                      fullWidth
-                                      options={VOICES}
-                                      value={__section?.narrative?.voice || ""}
-                                      onChange={(__ev, __value) => {
-                                        updateNarrative(__section_i, {
-                                          voice: __value,
-                                        });
-                                      }}
-                                      renderInput={(params) => (
-                                        <TextField {...params} label="Voice" />
-                                      )}
-                                    />
+                                    <InputTooltip
+                                      tooltip={
+                                        <>
+                                          <p>Who is speaking?</p>
+                                        </>
+                                      }
+                                    >
+                                      <Autocomplete
+                                        fullWidth
+                                        options={VOICES}
+                                        value={
+                                          __section?.narrative?.voice || ""
+                                        }
+                                        onChange={(__ev, __value) => {
+                                          updateNarrative(__section_i, {
+                                            voice: __value,
+                                          });
+                                        }}
+                                        renderInput={(params) => (
+                                          <TextField
+                                            {...params}
+                                            label="Voice"
+                                          />
+                                        )}
+                                      />
+                                    </InputTooltip>
                                   </Grid>
                                   <Grid size={3}>
+                                    {/* TODO: Faltando */}
                                     <Autocomplete
                                       fullWidth
                                       options={GRAMMATICAL_NUMBER}
@@ -744,306 +977,475 @@ export default function Home() {
                                     />
                                   </Grid>
                                   <Grid size={3}>
-                                    <Autocomplete
-                                      fullWidth
-                                      options={POSITIONS}
-                                      value={
-                                        __section?.narrative?.position || ""
+                                    <InputTooltip
+                                      tooltip={
+                                        <>
+                                          <p>
+                                            Where the narrator is “looking from”
+                                            — internal monologue, observer,
+                                            storyteller.
+                                          </p>
+                                        </>
                                       }
-                                      onChange={(__ev, __value) => {
-                                        updateNarrative(__section_i, {
-                                          position: __value,
-                                        });
-                                      }}
-                                      renderInput={(params) => (
-                                        <TextField
-                                          {...params}
-                                          label="Position"
-                                        />
-                                      )}
-                                    />
+                                    >
+                                      <Autocomplete
+                                        fullWidth
+                                        options={POSITIONS}
+                                        value={
+                                          __section?.narrative?.position || ""
+                                        }
+                                        onChange={(__ev, __value) => {
+                                          updateNarrative(__section_i, {
+                                            position: __value,
+                                          });
+                                        }}
+                                        renderInput={(params) => (
+                                          <TextField
+                                            {...params}
+                                            label="Position"
+                                          />
+                                        )}
+                                      />
+                                    </InputTooltip>
                                   </Grid>
                                   <Grid size={6}>
-                                    <Autocomplete
-                                      fullWidth
-                                      multiple
-                                      options={FIGURES_OF_SPEECH}
-                                      limitTags={2}
-                                      value={
-                                        __section?.narrative
-                                          ?.figures_of_speech || []
+                                    <InputTooltip
+                                      tooltip={
+                                        <>
+                                          <p>
+                                            Choose which literary devices should
+                                            be emphasized (e.g., metaphor,
+                                            alliteration).
+                                          </p>
+                                        </>
                                       }
-                                      onChange={(__ev, __value) => {
-                                        updateNarrative(__section_i, {
-                                          figures_of_speech: __value,
-                                        });
-                                      }}
-                                      renderInput={(params) => (
-                                        <TextField
-                                          {...params}
-                                          label="Figures of Speech"
-                                        />
-                                      )}
-                                    />
+                                    >
+                                      <Autocomplete
+                                        fullWidth
+                                        multiple
+                                        options={FIGURES_OF_SPEECH}
+                                        limitTags={2}
+                                        value={
+                                          __section?.narrative
+                                            ?.figures_of_speech || []
+                                        }
+                                        onChange={(__ev, __value) => {
+                                          updateNarrative(__section_i, {
+                                            figures_of_speech: __value,
+                                          });
+                                        }}
+                                        renderInput={(params) => (
+                                          <TextField
+                                            {...params}
+                                            label="Figures of Speech"
+                                          />
+                                        )}
+                                      />
+                                    </InputTooltip>
                                   </Grid>
                                   <Grid size={3}>
-                                    <Autocomplete
-                                      fullWidth
-                                      options={[...LEVEL]}
-                                      value={
-                                        __section?.narrative?.literalness || ""
+                                    <InputTooltip
+                                      tooltip={
+                                        <>
+                                          <p>
+                                            How literal or abstract the writing
+                                            should be.
+                                          </p>
+                                          <p>
+                                            Low literalness = more metaphorical
+                                            and symbolic.
+                                          </p>
+                                        </>
                                       }
-                                      onChange={(__ev, __value) => {
-                                        updateNarrative(__section_i, {
-                                          literalness: __value,
-                                        });
-                                      }}
-                                      renderInput={(params) => (
-                                        <TextField
-                                          {...params}
-                                          label="Literalness"
-                                        />
-                                      )}
-                                    />
+                                    >
+                                      <Autocomplete
+                                        fullWidth
+                                        options={[...LEVEL]}
+                                        value={
+                                          __section?.narrative?.literalness ||
+                                          ""
+                                        }
+                                        onChange={(__ev, __value) => {
+                                          updateNarrative(__section_i, {
+                                            literalness: __value,
+                                          });
+                                        }}
+                                        renderInput={(params) => (
+                                          <TextField
+                                            {...params}
+                                            label="Literalness"
+                                          />
+                                        )}
+                                      />
+                                    </InputTooltip>
                                   </Grid>
                                   <Grid size={4}>
-                                    <Autocomplete
-                                      fullWidth
-                                      multiple
-                                      options={SENSES}
-                                      limitTags={3}
-                                      value={
-                                        __section?.narrative
-                                          ?.sensorial_details || []
+                                    <InputTooltip
+                                      tooltip={
+                                        <>
+                                          <p>
+                                            Which senses the lyrics should evoke
+                                            (visual, auditory, tactile...).
+                                          </p>
+                                          <p>Enhances imagery and immersion.</p>
+                                        </>
                                       }
-                                      onChange={(__ev, __value) => {
-                                        updateNarrative(__section_i, {
-                                          sensorial_details: __value,
-                                        });
-                                      }}
-                                      renderInput={(params) => (
-                                        <TextField
-                                          {...params}
-                                          label="Sensorial Details"
-                                        />
-                                      )}
-                                    />
+                                    >
+                                      <Autocomplete
+                                        fullWidth
+                                        multiple
+                                        options={SENSES}
+                                        limitTags={3}
+                                        value={
+                                          __section?.narrative
+                                            ?.sensorial_details || []
+                                        }
+                                        onChange={(__ev, __value) => {
+                                          updateNarrative(__section_i, {
+                                            sensorial_details: __value,
+                                          });
+                                        }}
+                                        renderInput={(params) => (
+                                          <TextField
+                                            {...params}
+                                            label="Sensorial Details"
+                                          />
+                                        )}
+                                      />
+                                    </InputTooltip>
                                   </Grid>
                                   <Grid size={4}>
-                                    <Autocomplete
-                                      fullWidth
-                                      multiple
-                                      options={PHRASE_TYPES}
-                                      limitTags={2}
-                                      value={
-                                        __section?.narrative?.phrase_types || []
+                                    <InputTooltip
+                                      tooltip={
+                                        <>
+                                          <p>
+                                            Sentence structures to use inside
+                                            the section (declarative,
+                                            interrogative, imperative).
+                                          </p>
+                                        </>
                                       }
-                                      onChange={(__ev, __value) => {
-                                        updateNarrative(__section_i, {
-                                          phrase_types: __value,
-                                        });
-                                      }}
-                                      renderInput={(params) => (
-                                        <TextField
-                                          {...params}
-                                          label="Phrase Types"
-                                        />
-                                      )}
-                                    />
+                                    >
+                                      <Autocomplete
+                                        fullWidth
+                                        multiple
+                                        options={PHRASE_TYPES}
+                                        limitTags={2}
+                                        value={
+                                          __section?.narrative?.phrase_types ||
+                                          []
+                                        }
+                                        onChange={(__ev, __value) => {
+                                          updateNarrative(__section_i, {
+                                            phrase_types: __value,
+                                          });
+                                        }}
+                                        renderInput={(params) => (
+                                          <TextField
+                                            {...params}
+                                            label="Phrase Types"
+                                          />
+                                        )}
+                                      />
+                                    </InputTooltip>
                                   </Grid>
                                   <Grid size={4}>
-                                    <Autocomplete
-                                      fullWidth
-                                      freeSolo
-                                      options={RHYME_SCHEME}
-                                      value={__section?.rhyme_scheme || ""}
-                                      onChange={(__ev, __value) => {
-                                        updateSectionSpecifications(
-                                          __section_i,
-                                          {
-                                            rhyme_scheme: __value,
-                                          }
-                                        );
-                                      }}
-                                      renderInput={(params) => (
-                                        <TextField
-                                          {...params}
-                                          label="Rhyme Scheme"
-                                        />
-                                      )}
-                                    />
+                                    <InputTooltip
+                                      tooltip={
+                                        <>
+                                          <p>
+                                            The rhyme pattern used in the
+                                            section (e.g., ABAB, AABB).
+                                          </p>
+                                        </>
+                                      }
+                                    >
+                                      <Autocomplete
+                                        fullWidth
+                                        freeSolo
+                                        options={RHYME_SCHEME}
+                                        value={__section?.rhyme_scheme || ""}
+                                        onChange={(__ev, __value) => {
+                                          updateSectionSpecifications(
+                                            __section_i,
+                                            {
+                                              rhyme_scheme: __value,
+                                            }
+                                          );
+                                        }}
+                                        renderInput={(params) => (
+                                          <TextField
+                                            {...params}
+                                            label="Rhyme Scheme"
+                                          />
+                                        )}
+                                      />
+                                    </InputTooltip>
                                   </Grid>
                                   <Grid size={6}>
-                                    <Autocomplete
-                                      fullWidth
-                                      freeSolo
-                                      multiple
-                                      limitTags={2}
-                                      options={RHYME_TYPES}
-                                      value={__section?.rhyme_type || []}
-                                      onChange={(__ev, __value) => {
-                                        updateSectionSpecifications(
-                                          __section_i,
-                                          {
-                                            rhyme_type: __value,
-                                          }
-                                        );
-                                      }}
-                                      renderInput={(params) => (
-                                        <TextField
-                                          {...params}
-                                          label="Rhyme Type"
-                                        />
-                                      )}
-                                    />
-                                  </Grid>
-                                  <Grid size={3}>
-                                    <Autocomplete
-                                      fullWidth
-                                      options={[...LEVEL]}
-                                      value={__section?.syllabic_density || ""}
-                                      onChange={(__ev, __value) => {
-                                        updateSectionSpecifications(
-                                          __section_i,
-                                          {
-                                            syllabic_density: __value,
-                                          }
-                                        );
-                                      }}
-                                      renderInput={(params) => (
-                                        <TextField
-                                          {...params}
-                                          label="Syllabic Density"
-                                        />
-                                      )}
-                                    />
-                                  </Grid>
-                                  <Grid size={3}>
-                                    <Autocomplete
-                                      fullWidth
-                                      options={[...LEVEL]}
-                                      value={
-                                        __section?.repetition_intensity || ""
+                                    <InputTooltip
+                                      tooltip={
+                                        <>
+                                          <p>
+                                            The kind of rhyme: end rhyme, slant
+                                            rhyme, internal rhyme, etc.
+                                          </p>
+                                        </>
                                       }
-                                      onChange={(__ev, __value) => {
-                                        updateSectionSpecifications(
-                                          __section_i,
-                                          {
-                                            repetition_intensity: __value,
-                                          }
-                                        );
-                                      }}
-                                      renderInput={(params) => (
-                                        <TextField
-                                          {...params}
-                                          label="Repetition Intensity"
-                                        />
-                                      )}
-                                    />
+                                    >
+                                      <Autocomplete
+                                        fullWidth
+                                        freeSolo
+                                        multiple
+                                        limitTags={2}
+                                        options={RHYME_TYPES}
+                                        value={__section?.rhyme_type || []}
+                                        onChange={(__ev, __value) => {
+                                          updateSectionSpecifications(
+                                            __section_i,
+                                            {
+                                              rhyme_type: __value,
+                                            }
+                                          );
+                                        }}
+                                        renderInput={(params) => (
+                                          <TextField
+                                            {...params}
+                                            label="Rhyme Type"
+                                          />
+                                        )}
+                                      />
+                                    </InputTooltip>
+                                  </Grid>
+                                  <Grid size={3}>
+                                    <InputTooltip
+                                      tooltip={
+                                        <>
+                                          <p>
+                                            How many syllables per line the
+                                            section should aim for.
+                                          </p>
+                                          <p>
+                                            Affects pacing and rhythmic feel.
+                                          </p>
+                                        </>
+                                      }
+                                    >
+                                      <Autocomplete
+                                        fullWidth
+                                        options={[...LEVEL]}
+                                        value={
+                                          __section?.syllabic_density || ""
+                                        }
+                                        onChange={(__ev, __value) => {
+                                          updateSectionSpecifications(
+                                            __section_i,
+                                            {
+                                              syllabic_density: __value,
+                                            }
+                                          );
+                                        }}
+                                        renderInput={(params) => (
+                                          <TextField
+                                            {...params}
+                                            label="Syllabic Density"
+                                          />
+                                        )}
+                                      />
+                                    </InputTooltip>
+                                  </Grid>
+                                  <Grid size={3}>
+                                    <InputTooltip
+                                      tooltip={
+                                        <>
+                                          <p>...</p>
+                                        </>
+                                      }
+                                    >
+                                      <Autocomplete
+                                        fullWidth
+                                        options={[...LEVEL]}
+                                        value={
+                                          __section?.repetition_intensity || ""
+                                        }
+                                        onChange={(__ev, __value) => {
+                                          updateSectionSpecifications(
+                                            __section_i,
+                                            {
+                                              repetition_intensity: __value,
+                                            }
+                                          );
+                                        }}
+                                        renderInput={(params) => (
+                                          <TextField
+                                            {...params}
+                                            label="Repetition Intensity"
+                                          />
+                                        )}
+                                      />
+                                    </InputTooltip>
                                   </Grid>
                                   <Grid size={4}>
-                                    <Autocomplete
-                                      fullWidth
-                                      options={SCALES}
-                                      value={__section?.scale || null}
-                                      onChange={(__ev, __value) => {
-                                        updateSectionSpecifications(
-                                          __section_i,
-                                          {
-                                            scale: __value,
-                                          }
-                                        );
-                                      }}
-                                      renderInput={(params) => (
-                                        <TextField {...params} label="Scale" />
-                                      )}
-                                    />
+                                    <InputTooltip
+                                      tooltip={
+                                        <>
+                                          <p>
+                                            The scale that shapes the melodic or
+                                            harmonic mood of the section.
+                                          </p>
+                                        </>
+                                      }
+                                    >
+                                      <Autocomplete
+                                        fullWidth
+                                        options={SCALES}
+                                        value={__section?.scale || null}
+                                        onChange={(__ev, __value) => {
+                                          updateSectionSpecifications(
+                                            __section_i,
+                                            {
+                                              scale: __value,
+                                            }
+                                          );
+                                        }}
+                                        renderInput={(params) => (
+                                          <TextField
+                                            {...params}
+                                            label="Scale"
+                                          />
+                                        )}
+                                      />
+                                    </InputTooltip>
                                   </Grid>
                                   <Grid size={2}>
-                                    <NumberField
-                                      label="Bars"
-                                      value={__section?.length_in_bars || ""}
-                                      onChange={(__ev: any) => {
-                                        updateSectionSpecifications(
-                                          __section_i,
-                                          {
-                                            length_in_bars: __ev?.target?.value,
-                                          }
-                                        );
-                                      }}
-                                      max={300}
-                                    />
-                                  </Grid>
-                                  <Grid size={3}>
-                                    <Autocomplete
-                                      fullWidth
-                                      options={LENGTHS}
-                                      value={__section?.notes_length || null}
-                                      onChange={(__ev, __value) => {
-                                        updateSectionSpecifications(
-                                          __section_i,
-                                          {
-                                            notes_length: __value,
-                                          }
-                                        );
-                                      }}
-                                      renderInput={(params) => (
-                                        <TextField
-                                          {...params}
-                                          label="Notes Length"
-                                        />
-                                      )}
-                                    />
-                                  </Grid>
-                                  <Grid size={3}>
-                                    <Autocomplete
-                                      fullWidth
-                                      options={LEVEL}
-                                      value={
-                                        __section?.spaces_between_lines || null
+                                    <InputTooltip
+                                      tooltip={
+                                        <>
+                                          <p>
+                                            The number of musical bars the
+                                            section should fit into.
+                                          </p>
+                                        </>
                                       }
-                                      onChange={(__ev, __value) => {
-                                        updateSectionSpecifications(
-                                          __section_i,
-                                          {
-                                            spaces_between_lines: __value,
-                                          }
-                                        );
-                                      }}
-                                      renderInput={(params) => (
-                                        <TextField
-                                          {...params}
-                                          label="Space Between Lines"
-                                        />
-                                      )}
-                                    />
+                                    >
+                                      <NumberField
+                                        label="Bars"
+                                        value={__section?.length_in_bars || ""}
+                                        onChange={(__ev: any) => {
+                                          updateSectionSpecifications(
+                                            __section_i,
+                                            {
+                                              length_in_bars:
+                                                __ev?.target?.value,
+                                            }
+                                          );
+                                        }}
+                                        max={300}
+                                      />
+                                    </InputTooltip>
                                   </Grid>
                                   <Grid size={3}>
-                                    <Autocomplete
-                                      fullWidth
-                                      options={LEVEL}
-                                      value={
-                                        __section?.density_of_notes || null
+                                    <InputTooltip
+                                      tooltip={
+                                        <>
+                                          <p>
+                                            Whether the notes in this section
+                                            should be mostly short, medium, or
+                                            long.
+                                          </p>
+                                        </>
                                       }
-                                      onChange={(__ev, __value) => {
-                                        updateSectionSpecifications(
-                                          __section_i,
-                                          {
-                                            density_of_notes: __value,
-                                          }
-                                        );
-                                      }}
-                                      renderInput={(params) => (
-                                        <TextField
-                                          {...params}
-                                          label="Density of Notes"
-                                        />
-                                      )}
-                                    />
+                                    >
+                                      <Autocomplete
+                                        fullWidth
+                                        options={LENGTHS}
+                                        value={__section?.notes_length || null}
+                                        onChange={(__ev, __value) => {
+                                          updateSectionSpecifications(
+                                            __section_i,
+                                            {
+                                              notes_length: __value,
+                                            }
+                                          );
+                                        }}
+                                        renderInput={(params) => (
+                                          <TextField
+                                            {...params}
+                                            label="Notes Length"
+                                          />
+                                        )}
+                                      />
+                                    </InputTooltip>
+                                  </Grid>
+                                  <Grid size={3}>
+                                    <InputTooltip
+                                      tooltip={
+                                        <>
+                                          <p>...</p>
+                                        </>
+                                      }
+                                    >
+                                      <Autocomplete
+                                        fullWidth
+                                        options={LEVEL}
+                                        value={
+                                          __section?.spaces_between_lines ||
+                                          null
+                                        }
+                                        onChange={(__ev, __value) => {
+                                          updateSectionSpecifications(
+                                            __section_i,
+                                            {
+                                              spaces_between_lines: __value,
+                                            }
+                                          );
+                                        }}
+                                        renderInput={(params) => (
+                                          <TextField
+                                            {...params}
+                                            label="Space Between Lines"
+                                          />
+                                        )}
+                                      />
+                                    </InputTooltip>
+                                  </Grid>
+                                  <Grid size={3}>
+                                    <InputTooltip
+                                      tooltip={
+                                        <>
+                                          <p>
+                                            How many notes per bar/phrase.
+                                            Higher density feels more energetic.
+                                          </p>
+                                        </>
+                                      }
+                                    >
+                                      <Autocomplete
+                                        fullWidth
+                                        options={LEVEL}
+                                        value={
+                                          __section?.density_of_notes || null
+                                        }
+                                        onChange={(__ev, __value) => {
+                                          updateSectionSpecifications(
+                                            __section_i,
+                                            {
+                                              density_of_notes: __value,
+                                            }
+                                          );
+                                        }}
+                                        renderInput={(params) => (
+                                          <TextField
+                                            {...params}
+                                            label="Density of Notes"
+                                          />
+                                        )}
+                                      />
+                                    </InputTooltip>
                                   </Grid>
                                 </Grid>
                               </AccordionDetails>
-                              <AccordionActions>
+                              {/* <AccordionActions>
                                 <Button
                                   size="small"
                                   color="error"
@@ -1061,7 +1463,7 @@ export default function Home() {
                                 >
                                   Remove Section
                                 </Button>
-                              </AccordionActions>
+                              </AccordionActions> */}
                             </Accordion>
                           </>
                         )}

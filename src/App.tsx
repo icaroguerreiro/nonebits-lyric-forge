@@ -7,6 +7,10 @@ const darkTheme = createTheme({
   palette: {
     mode: "dark",
   },
+  typography: {
+    fontSize: 12,
+  },
+  spacing: 4,
 });
 
 function App() {

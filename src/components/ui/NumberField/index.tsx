@@ -19,7 +19,22 @@ export default function NumberField(props: any) {
       onChange={(__ev: any) => {
         onChange(__ev);
       }}
-      slotProps={{ htmlInput: rest }}
+      slotProps={{
+        htmlInput: {
+          ...rest,
+          sx: {
+            "&::-webkit-outer-spin-button": {
+              WebkitAppearance: "none",
+              margin: 0,
+            },
+            "&::-webkit-inner-spin-button": {
+              WebkitAppearance: "none",
+              margin: 0,
+            },
+            "&[type=number]": { MozAppearance: "textfield" },
+          },
+        },
+      }}
     />
   );
 }
