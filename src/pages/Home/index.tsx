@@ -18,6 +18,7 @@ import {
   ListItemIcon,
   ListItemText,
   Box,
+  Tooltip,
 } from "@mui/material";
 import {
   SECTION_TYPES,
@@ -451,37 +452,39 @@ export default function Home() {
                                       mr: 2,
                                     }}
                                   >
-                                    <Delete
-                                      // fontSize="small"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        setinputs({
-                                          ...inputs,
-                                          sections_specifications:
-                                            inputs.sections_specifications.filter(
-                                              (__: any, __i: number) =>
-                                                __i !== __section_i
-                                            ),
-                                        });
-                                      }}
-                                      sx={{
-                                        padding: ".5rem .5rem .5rem .25rem",
-                                        width: "2.25rem",
-                                        height: "2.25rem",
-                                      }}
-                                    />
-                                    <ContentCopy
-                                      // fontSize="small"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        duplicateSection(__section);
-                                      }}
-                                      sx={{
-                                        padding: ".25rem",
-                                        width: "1.5rem",
-                                        height: "1.5rem",
-                                      }}
-                                    />
+                                    <Tooltip title="Delete">
+                                      <Delete
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setinputs({
+                                            ...inputs,
+                                            sections_specifications:
+                                              inputs.sections_specifications.filter(
+                                                (__: any, __i: number) =>
+                                                  __i !== __section_i
+                                              ),
+                                          });
+                                        }}
+                                        sx={{
+                                          padding: ".5rem .5rem .5rem .25rem",
+                                          width: "2.25rem",
+                                          height: "2.25rem",
+                                        }}
+                                      />
+                                    </Tooltip>
+                                    <Tooltip title="Clone">
+                                      <ContentCopy
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          duplicateSection(__section);
+                                        }}
+                                        sx={{
+                                          padding: ".25rem",
+                                          width: "1.5rem",
+                                          height: "1.5rem",
+                                        }}
+                                      />
+                                    </Tooltip>
                                   </Box>
                                   <Box
                                     sx={{
@@ -505,8 +508,10 @@ export default function Home() {
                                 }}
                               >
                                 <DragIndicator
-                                  sx={{ mr: 1 }}
-                                  fontSize="small"
+                                  sx={{
+                                    mr: 2,
+                                    cursor: "all-scroll !important",
+                                  }}
                                   {...listeners}
                                   onClick={(e: any) => e.stopPropagation()}
                                 />
