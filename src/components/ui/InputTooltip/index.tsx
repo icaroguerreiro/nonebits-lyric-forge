@@ -45,6 +45,12 @@ export default function InputTooltip({
     setOpen(false);
   };
 
+  useEffect(() => {
+    const handleClick = () => closeNow();
+    window.addEventListener("mousedown", handleClick);
+    return () => window.removeEventListener("mousedown", handleClick);
+  }, []);
+
   const enhancedChild = React.cloneElement(children, {
     ...children.props,
     onFocus: (e: any) => {
